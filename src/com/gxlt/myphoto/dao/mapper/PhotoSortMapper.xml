@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.gxlt.myphoto.dao.IPhotoSortDao">
+	<!-- 结果集映射，相当于把ResultSet中的字段，映射并封装成一个对象 -->
+	<!-- type是封装成的对象类型，id是该结果集的唯一标志 -->
+	<resultMap type="PhotoSort" id="sortMap">
+		<id column="SID" property="id"/>
+		<result column="S_NAME" property="name" />
+		<!-- 配置与用户表双向关联 -->
+		<association property="user" select="com.gxlt.myphoto.dao.IUserDao.queryById"
+			column="P_USERID" javaType="User"/>
+		<!-- 配置与照片表双向关联 -->
+		<collection property="photos" select="com.gxlt.myphoto.dao.IPhotoGraphDao.queryBySortId"
+					javaType="java.util.List" ofType="PhotoGraph" column="SID"/>
+	</resultMap>
+	<select id="queryById" resultMap="sortMap">
+		select *
+		from P_SORT where sid=#{id}
+	</select>
+	
+	<select id="findAllByUid" resultMap="sortMap">
+		select *
+		from P_SORT where P_USERID=#{uid}
+	</select>
+	
+<insert id="insertSortByNameAndUid"  parameterType="PhotoSort">
+	<!-- keyColumn表示数据库中的主键
+	keyProperty表示序列生成的id放到实体类中的哪个属性中
+	order表示顺序，before表示在插入之前执行selectkey查询序列
+	resultType表示序列生成的数字的类型 -->
+		<selectKey keyColumn="SID" keyProperty="id" 
+		order="BEFORE" resultType="java.lang.Long">
+			select SORT_SID_SEQ.nextval from dual
+		</selectKey>
+		insert into p_sort(sid,s_name,p_userid)
+		values
+		(#{id},#{name},#{user.id})
+	</insert>
+</mapper>

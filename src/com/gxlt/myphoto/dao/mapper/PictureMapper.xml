@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.gxlt.myphoto.dao.IPictureDao">
+	<resultMap type="Picture" id="pictrueMap">
+		<id column="ID" property="id" javaType="long" jdbcType="DECIMAL" />
+		<result column="ALBUMID" property="albumId" />
+		<result column="PHOTONAME" property="photoName" />
+		<result column="UPTIME" property="upTime" />
+		<!-- <collection property="sort" select="com.gxlt.myphoto.dao.IPictureDao.queryById" 
+			javaType="java.util.List" ofType="PostSort" column="ID"/> -->
+	</resultMap>
+	<select id="queryById" parameterType="int" resultMap="pictrueMap">
+		select *
+		from p_picture where id = #{id}
+	</select>
+
+	<!-- 添加相片 -->
+	<insert id="insertPhoto" parameterType="Picture">
+		<!-- keyColumn表示数据库中的主键 keyProperty表示序列生成的id放到实体类中的哪个属性中 order表示顺序，before表示在插入之前执行selectkey查询序列 
+			resultType表示序列生成的数字的类型 -->
+		<selectKey keyColumn="ID" keyProperty="id" order="BEFORE"
+			resultType="java.lang.Long">
+			select PICTURE_ID_SEQ.nextval from dual
+		</selectKey>
+		insert into P_PICTURE(id,albumid,photoname,uptime)
+		values
+		(#{id},#{albumId},#{photoName},#{upTime})
+	</insert>
+
+	<select id="queryAllPhoto" resultMap="pictrueMap">
+		select * from P_PICTURE
+		where ALBUMID in(
+		select id
+		from P_ALBUM
+		where USERID=#{0}
+		)
+	</select>
+	
+	<select id="queryPhotoByAlbum"  resultMap="pictrueMap">
+		select * from P_PICTURE
+		where ALBUMID in(
+		select id
+		from P_ALBUM
+		where USERID=#{0} and PHOTOALBUM=#{1}
+		)
+	</select>
+
+</mapper>

@@ -1,0 +1,9 @@
+body {
+    background-color: #2D2D2D;
+}
+#imp img:hover{
+    BORDER-RIGHT: #0ce1ff 2px solid;
+    BORDER-TOP: #0ce1ff 2px solid;
+    BORDER-LEFT: #0ce1ff 2px solid;
+    BORDER-BOTTOM: #0ce1ff 2px solid
+}

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.gxlt.myphoto.dao.IUserDao">
+	<resultMap type="User" id="userMap">
+		<id column="PID" property="id" javaType="long" jdbcType="DECIMAL" />
+		<result column="account" property="name" />
+		<result column="password" property="password" />
+		
+		<collection property="sort" select="com.gxlt.myphoto.dao.IPhotoSortDao.queryById"
+					javaType="java.util.List" ofType="PostSort" column="PID"/>
+	</resultMap>
+	<select id="queryById" parameterType="int" resultMap="userMap">
+		select *
+		from p_user where pid = #{id}
+	</select>
+<!-- 	<select id="queryByNameAndPwd" parameterType="User" resultMap="userMap">
+		select
+		<include refid="base_col" />
+		from p_user
+		where account=#{name}
+		and
+		password=#{password}
+	</select> -->
+	<select id="queryByNameAndPwd2" resultMap="userMap">
+		select *
+		from p_user
+		where account=#{0}
+		and
+		password=#{1}
+	</select>
+	
+		<!-- 插入 -->
+	<insert id="insert" parameterType="User">
+	<!-- keyColumn表示数据库中的主键 -->
+	<!-- keyProperty表示序列生成的id放到实体类中的哪个属性中 -->
+	<!-- order表示顺序，before表示在插入之前执行selectkey查询序列 -->
+	<!-- resultType表示序列生成的数字的类型 -->
+		<selectKey keyColumn="PID" keyProperty="id" 
+		order="BEFORE" resultType="java.lang.Long">
+			select USER_UID_SEQ.nextval from dual
+		</selectKey>
+		insert into p_user (pid,account,password)
+		values
+		(#{id},#{name},#{password})
+	</insert>
+	
+	<!-- 方法3：传入多参数，并使用@Param注解，即可使用参数名的方式传参
+	<select id="queryByNameAndPwd3" resultMap="userMap">
+		select
+		<include refid="base_col" />
+		from p_user
+		where account=#{name}
+		and
+		password=#{password}
+	</select>
+
+	插入
+	<insert id="insert" parameterType="User">
+		keyColumn表示数据库中的主键
+		keyProperty表示序列生成的id放到实体类中的哪个属性中
+		order表示顺序，before表示在插入之前执行selectkey查询序列
+		resultType表示序列生成的数字的类型
+		<selectKey keyColumn="PID" keyProperty="id" order="BEFORE"
+			resultType="java.lang.Long">
+			select USER_UID_SEQ.nextval from dual
+		</selectKey>
+		insert into t_user (u_id,username,pwd,age)
+		values
+		(#{id},#{name},#{password},#{age})
+	</insert>
+
+	更新
+	<update id="update" parameterType="User">
+		update t_user
+		set
+		username=#{name},pwd=#{password},age=#{age}
+		where u_id=#{id}
+	</update>
+	删除
+	<delete id="deleteById">
+		delete from t_user where u_id=#{id}
+	</delete> -->
+</mapper>
